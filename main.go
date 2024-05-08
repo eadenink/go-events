@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/eadenink/go-events/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,6 @@ func main() {
 
 func getEvents(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{
-		"message": "ok!",
+		"events": models.GetEvents(),
 	})
 }
