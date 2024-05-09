@@ -37,7 +37,6 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	event.ID = len(models.GetEvents()) + 1
 	event.DateTime = time.Now()
 	event.UserID = 1
 

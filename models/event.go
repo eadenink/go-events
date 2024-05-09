@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/eadenink/go-events/db"
+)
 
 type Event struct {
-	ID          int       `json:"id"`
+	ID          int64     `json:"id"`
 	Title       string    `json:"title" binding:"required"`
 	Description string    `json:"description" binding:"required"`
 	Location    string    `json:"location" binding:"required"`
@@ -11,12 +15,31 @@ type Event struct {
 	UserID      int       `json:"user_id"`
 }
 
-var events = []Event{}
+func (event *Event) Save() error {
+	query := `
+	INSERT INTO events (title, description, location, date_time, user_id)
+	VALUES (?, ?, ?, ?, ?)`
 
-func (event *Event) Save() {
-	events = append(events, *event)
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(event.Title, event.Description, event.Location, event.DateTime, event.UserID)
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	event.ID = id
+	return nil
 }
 
 func GetEvents() []Event {
-	return events
+	return []Event{}
 }
