@@ -4,11 +4,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eadenink/go-events/db"
 	"github.com/eadenink/go-events/models"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	db.InitDb()
+
 	server := gin.Default()
 
 	server.GET("/events", getEvents)
