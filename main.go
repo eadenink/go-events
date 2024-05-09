@@ -15,6 +15,7 @@ func main() {
 	server.GET("/events/:id", methods.GetEvent)
 
 	server.POST("/events", methods.CreateEvent)
+	server.PUT("/events/:id", methods.UpdateEvent)
 
 	server.Run(":8080")
 }
