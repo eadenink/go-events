@@ -20,6 +20,7 @@ func main() {
 	server.DELETE("/events/:id", eventMethods.DeleteEvent)
 
 	server.POST("/signup", userMethods.SignUp)
+	server.POST("/login", userMethods.Login)
 
 	server.Run(":8080")
 }
