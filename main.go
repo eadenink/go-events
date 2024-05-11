@@ -30,7 +30,7 @@ func main() {
 	events.DELETE("/:id", eventMethods.DeleteEvent)
 
 	events.POST("/:id/register", eventMethods.Register)
-	events.DELETE("/:id/cancel-registration", eventMethods.CancelRegistration)
+	events.POST("/:id/cancel-registration", eventMethods.CancelRegistration)
 
 	//----- USER ROUTES -----
 
