@@ -25,6 +25,14 @@ func UpdateEvent(context *gin.Context) {
 		return
 	}
 
+	userId := context.GetInt64("userId")
+	if event.UserID != userId {
+		context.JSON(http.StatusForbidden, gin.H{
+			"message": "You are not authorized to update this event",
+		})
+		return
+	}
+
 	var updatedEvent models.Event
 
 	err = context.BindJSON(&updatedEvent)

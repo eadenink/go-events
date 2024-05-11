@@ -12,12 +12,11 @@ var secret = []byte("secret")
 func GenerateToken(userId int64, email string) (string, error) {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"email":  email,
 		"exp":    time.Now().Add(time.Hour * 24 * 365).Unix(),
 	}).SignedString(secret)
 }
 
-func VerifyToken(token string) error {
+func VerifyToken(token string) (int64, error) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -28,20 +27,18 @@ func VerifyToken(token string) error {
 	})
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	if !parsedToken.Valid {
-		return errors.New("invalid token")
+		return 0, errors.New("invalid token")
 	}
 
-	_, ok := parsedToken.Claims.(jwt.MapClaims)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return errors.New("invalid claims")
+		return 0, errors.New("invalid claims")
 	}
 
-	// email := claims["email"].(string)
-	// userId := claims["userId"].(int64)
-
-	return nil
+	userId := claims["userId"].(float64)
+	return int64(userId), nil
 }

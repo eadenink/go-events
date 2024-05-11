@@ -4,6 +4,7 @@ import (
 	"github.com/eadenink/go-events/db"
 	eventMethods "github.com/eadenink/go-events/methods/events"
 	userMethods "github.com/eadenink/go-events/methods/users"
+	"github.com/eadenink/go-events/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,12 +13,23 @@ func main() {
 
 	server := gin.Default()
 
-	server.GET("/events", eventMethods.GetEvents)
-	server.GET("/events/:id", eventMethods.GetEvent)
+	events := server.Group("/events")
 
-	server.POST("/events", eventMethods.CreateEvent)
-	server.PUT("/events/:id", eventMethods.UpdateEvent)
-	server.DELETE("/events/:id", eventMethods.DeleteEvent)
+	//----- EVENT ROUTES -----
+
+	// Unauthenticated
+
+	events.GET("/", eventMethods.GetEvents)
+	events.GET("/:id", eventMethods.GetEvent)
+
+	// Authenticated
+	events.Use(middlewares.CheckAuth)
+
+	events.POST("/", eventMethods.CreateEvent)
+	events.PUT("/:id", eventMethods.UpdateEvent)
+	events.DELETE("/:id", eventMethods.DeleteEvent)
+
+	//----- USER ROUTES -----
 
 	server.POST("/signup", userMethods.SignUp)
 	server.POST("/login", userMethods.Login)

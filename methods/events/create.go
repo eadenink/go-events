@@ -20,7 +20,7 @@ func CreateEvent(context *gin.Context) {
 	}
 
 	event.DateTime = time.Now()
-	event.UserID = 1
+	event.UserID = context.GetInt64("userId")
 
 	err = event.Save()
 	if err != nil {

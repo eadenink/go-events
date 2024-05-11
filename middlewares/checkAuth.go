@@ -1,16 +1,27 @@
 package middlewares
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/eadenink/go-events/utils"
+	"github.com/gin-gonic/gin"
+)
 
 func CheckAuth(context *gin.Context) {
 	token := context.GetHeader("Authorization")
 	if token == "" {
-		context.JSON(401, gin.H{
+		context.AbortWithStatusJSON(401, gin.H{
 			"message": "Not authorized",
 		})
-		context.Abort()
 		return
 	}
 
+	userId, err := utils.VerifyToken(token)
+	if err != nil {
+		context.AbortWithStatusJSON(401, gin.H{
+			"message": "Not authorized",
+		})
+		return
+	}
+
+	context.Set("userId", userId)
 	context.Next()
 }
