@@ -29,6 +29,9 @@ func main() {
 	events.PUT("/:id", eventMethods.UpdateEvent)
 	events.DELETE("/:id", eventMethods.DeleteEvent)
 
+	events.POST("/:id/register", eventMethods.Register)
+	events.DELETE("/:id/cancel-registration", eventMethods.CancelRegistration)
+
 	//----- USER ROUTES -----
 
 	server.POST("/signup", userMethods.SignUp)
