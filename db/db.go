@@ -7,6 +7,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type createTableOperation struct {
+	query     string
+	tableName string
+}
+
 var DB *sql.DB
 
 func InitDb() {
@@ -54,15 +59,29 @@ func createTables() {
 	)
 	`
 
-	createTable(createUsersTable, "users")
-	createTable(createEventsTable, "events")
-	createTable(createRegistrationsTable, "registrations")
+	operations := []createTableOperation{
+		{query: createUsersTable, tableName: "users"},
+		{query: createEventsTable, tableName: "events"},
+		{query: createRegistrationsTable, tableName: "registrations"},
+	}
+
+	done := make([]chan bool, len(operations))
+
+	for i, operation := range operations {
+		done[i] = make(chan bool)
+		go createTable(done[i], operation.query, operation.tableName)
+	}
+
+	for _, done := range done {
+		<-done
+	}
 }
 
-func createTable(query string, tableName string) {
+func createTable(channel chan bool, query string, tableName string) {
 	_, err := DB.Exec(query)
-
 	if err != nil {
-		panic(fmt.Sprintf("Can't create %s table", tableName))
+		panic(fmt.Sprintf("Can't create \"%s\" table", tableName))
 	}
+
+	channel <- true
 }
